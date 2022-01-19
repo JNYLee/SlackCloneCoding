@@ -1,49 +1,38 @@
-// import useInput from '@hooks/useInput';
-// import fetcher from '@utils/fetcher';
+import useInput from '@hooks/useInput';
+import fetcher from '@utils/fetcher';
 import React, { useCallback, useState, VFC } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import useSWR from 'swr';
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
 import { Link, Redirect } from 'react-router-dom';
-import useInput from '@hooks/useInput';
-import axios from 'axios';
 
 const SignUp = () => {
-  // const { data, error, revalidate } = useSWR('/api/users', fetcher);
+  const { data, error, revalidate } = useSWR('/api/users', fetcher);
 
-  const [email, onChangeEmail, ] = useInput('');
-  const [nickname, onChangeNickname, ] = useInput('');
-  const [password, setPassword] = useState('');
-  const [passwordCheck, setPasswordCheck] = useState('');
+  const [email, onChangeEmail] = useInput('');
+  const [nickname, onChangeNickname] = useInput('');
+  const [password, , setPassword] = useInput('');
+  const [passwordCheck, , setPasswordCheck] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
   const [signUpError, setSignUpError] = useState('');
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-	const onChangePassword = useCallback((e) => {
-    setPassword(e.target.value);
-  }, []);
-	const onChangePasswordCheck = useCallback((e) => {
-    setPasswordCheck(e.target.value);
-    setMismatchError(e.target.value !== password);
-  }, [password]);
-  // my code
-  // const onSubmit = useCallback((e) => {
-  //   e.preventDefault();
-  //   console.log(email, nickname, password, passwordCheck);
-  //   if (mismatchError) {
-  //     console.log('서버로 회원가입하기');
-  //     axios.post('http://localhost:3096/api/users', {
-  //       email,
-  //       nickname,
-  //       password,
-  //     }).then((response)=> {
-  //       console.log(response);
-  //     }).catch((error)=> {console.log(error.response);
-  //     });
-  //   }
-  // }, [email, nickname, password, passwordCheck]);
+  const onChangePassword = useCallback(
+    (e) => {
+      setPassword(e.target.value);
+      setMismatchError(e.target.value !== passwordCheck);
+    },
+    [passwordCheck],
+  );
 
-  // clone code
+  const onChangePasswordCheck = useCallback(
+    (e) => {
+      setPasswordCheck(e.target.value);
+      setMismatchError(e.target.value !== password);
+    },
+    [password],
+  );
+
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -70,6 +59,15 @@ const SignUp = () => {
     },
     [email, nickname, password, passwordCheck, mismatchError],
   );
+
+  if (data === undefined) {
+    return <div>로딩중...</div>;
+  }
+
+  if (data) {
+    return <Redirect to="/workspace/sleact/channel/일반" />;
+  }
+
   return (
     <div id="container">
       <Header>Sleact</Header>
