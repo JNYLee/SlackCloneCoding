@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { Success, Form, Error, Label, Input, LinkContainer, Button, Header } from './styles';
 import { Link, Redirect } from 'react-router-dom';
 import useInput from '@hooks/useInput';
+import axios from 'axios';
 
 const SignUp = () => {
   // const { data, error, revalidate } = useSWR('/api/users', fetcher);
@@ -25,14 +26,50 @@ const SignUp = () => {
     setPasswordCheck(e.target.value);
     setMismatchError(e.target.value !== password);
   }, [password]);
-	const onSubmit = useCallback((e) => {
-    e.preventDefault();
-    console.log(email, nickname, password, passwordCheck);
-    if (mismatchError) {
-      console.log('서버로 회원가입하기');
-    }
-  }, [email, nickname, password, passwordCheck]);
+  // my code
+  // const onSubmit = useCallback((e) => {
+  //   e.preventDefault();
+  //   console.log(email, nickname, password, passwordCheck);
+  //   if (mismatchError) {
+  //     console.log('서버로 회원가입하기');
+  //     axios.post('http://localhost:3096/api/users', {
+  //       email,
+  //       nickname,
+  //       password,
+  //     }).then((response)=> {
+  //       console.log(response);
+  //     }).catch((error)=> {console.log(error.response);
+  //     });
+  //   }
+  // }, [email, nickname, password, passwordCheck]);
 
+  // clone code
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!mismatchError && nickname) {
+        console.log('서버로 회원가입하기');
+        setSignUpError('');
+        setSignUpSuccess(false);
+        axios
+          .post('/api/users', {
+            email,
+            nickname,
+            password,
+          })
+          .then((response) => {
+            console.log(response);
+            setSignUpSuccess(true);
+          })
+          .catch((error) => {
+            console.log(error.response);
+            setSignUpError(error.response.data);
+          })
+          .finally(() => {});
+      }
+    },
+    [email, nickname, password, passwordCheck, mismatchError],
+  );
   return (
     <div id="container">
       <Header>Sleact</Header>
