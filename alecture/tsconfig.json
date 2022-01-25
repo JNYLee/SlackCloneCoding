@@ -16,6 +16,7 @@
       "@layouts/*": ["layouts/*"],
       "@pages/*": ["pages/*"],
       "@utils/*": ["utils/*"],
+      "@styles/*": ["styles/*"],
       "@typings/*": ["typings/*"]
     }
   }

@@ -3,12 +3,12 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import webpack, { Configuration as WebpackConfiguration } from 'webpack';
 import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+
 interface Configuration extends WebpackConfiguration {
   devServer?: WebpackDevServerConfiguration;
 }
-
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
