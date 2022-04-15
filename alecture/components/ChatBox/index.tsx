@@ -17,6 +17,7 @@ const ChatBox: FC<Props> = ({ onSubmitForm, chat, onChangeChat, placeholder, dat
   useEffect(() => {
     if (textareaRef.current) {
       autosize(textareaRef.current);
+      console.log('Where Am I?');
     }
   }, []);
 
