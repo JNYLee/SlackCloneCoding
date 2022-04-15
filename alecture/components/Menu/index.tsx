@@ -1,30 +1,32 @@
-import React, { CSSProperties, FC, useCallback } from "react";
-import { CloseButton } from "react-toastify/dist/components";
-import { CloseModalButton, CreateMenu } from "./styles";
+import { CreateMenu, CloseModalButton } from '@components/Menu/styles';
+import React, { CSSProperties, FC, PropsWithChildren, useCallback } from 'react';
 
 interface Props {
-	show: boolean;
-	onCloseModal: (e: any) => void;
-	style:CSSProperties;
-	closeButton?: boolean
+  show: boolean;
+  onCloseModal: () => void;
+  style: CSSProperties;
+  closeButton?: boolean;
 }
 
-const Menu: FC<Props> = ({children, style, show, onCloseModal, closeButton}) => {
-	const stopPropagation = useCallback((e) => {
-		e.stopPropagation();
-	}, []);
+const Menu: FC<PropsWithChildren<Props>> = ({ closeButton, style, show, children, onCloseModal }) => {
+  const stopPropagation = useCallback((e) => {
+    e.stopPropagation();
+  }, []);
 
-	return (
-		<CreateMenu onClick={onCloseModal}>
-			<div style={style} onClick={stopPropagation}> 
-			{closeButton && <CloseModalButton onClick={onCloseModal}>&times;</CloseModalButton>}
-			{children}
-			</div>
-		</CreateMenu>
-	);
+  if (!show) {
+    return null;
+  }
+  return (
+    <CreateMenu onClick={onCloseModal}>
+      <div onClick={stopPropagation} style={style}>
+        {closeButton && <CloseModalButton onClick={onCloseModal}>&times;</CloseModalButton>}
+        {children}
+      </div>
+    </CreateMenu>
+  );
 };
 Menu.defaultProps = {
-	closeButton: true,
+  closeButton: true,
 };
 
 export default Menu;

@@ -1,36 +1,47 @@
 import { ChatWrapper } from '@components/Chat/styles';
-import { IDM } from '@typings/db';
-import React, { VFC, memo, useMemo } from 'react';
-import gravatar from 'gravatar';
+import { IChat, IDM, IUser } from '@typings/db';
 import dayjs from 'dayjs';
+import gravatar from 'gravatar';
+import React, { FC, useMemo, memo } from 'react';
+import { useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 import regexifyString from 'regexify-string';
-import { Link, useParams } from 'react-router-dom';
 
 interface Props {
-  data: IDM;
+  data: IDM | IChat;
 }
-const Chat: VFC<Props> = ({ data }) => {
-  const { workspace } = useParams<{ workspace: string; channel: string }>();
-  const user = data.sender;
 
-  const result = useMemo(
+const BACK_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3096' : 'https://sleact.nodebird.com';
+const Chat: FC<Props> = memo(({ data }) => {
+  const { workspace } = useParams<{ workspace: string; channel: string }>();
+  const user: IUser = 'Sender' in data ? data.Sender : data.User;
+
+  const result = useMemo<(string | JSX.Element)[] | JSX.Element>(
     () =>
-      regexifyString({
-        input: data.content,
-        pattern: /@\[(.+?)]\((\d+?)\)|\n/g,
-        decorator(match, index) {
-          const arr: string[] | null = match.match(/@\[(.+?)]\((\d+?)\)/)!;
-          if (arr) {
-            return (
-              <Link key={match + index} to={`/workspace/${workspace}/dm/${arr[2]}`}>
-                @{arr[1]}
-              </Link>
-            );
-          }
-          return <br key={index} />;
-        },
-      }),
-    [data.content],
+      data.content.startsWith('uploads\\') || data.content.startsWith('uploads/') ? (
+        <img src={`${BACK_URL}/${data.content}`} style={{ maxHeight: 200 }} />
+      ) : (
+        regexifyString({
+          pattern: /@\[(.+?)]\((\d+?)\)|\n/g,
+          decorator(match, index) {
+            const arr: string[] | null = match.match(/@\[(.+?)]\((\d+?)\)/)!;
+            console.log('arr: ', arr);
+            console.log('match: ', match);
+            console.log('index: ', index);
+            console.log('data.content: ', data.content);
+            if (arr) {
+              return (
+                <Link key={match + index} to={`/workspace/${workspace}/dm/${arr[2]}`}>
+                  @{arr[1]}
+                </Link>
+              );
+            }
+            return <br key={index} />;
+          },
+          input: data.content,
+        })
+      ),
+    [workspace, data.content],
   );
 
   return (
@@ -47,6 +58,6 @@ const Chat: VFC<Props> = ({ data }) => {
       </div>
     </ChatWrapper>
   );
-};
+});
 
-export default memo(Chat);
+export default Chat;

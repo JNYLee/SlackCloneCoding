@@ -1,20 +1,13 @@
-import { Dispatch, SetStateAction, useCallback, useState, UIEvent } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 
-type ReturnTypes<T = any> = [T, (e: any) => void, Dispatch<SetStateAction<T>>];
-
-const useInput = <T = any>(initialData: T): ReturnTypes<T> => {
-  const [value, setValue] = useState(initialData);
-  const handler = useCallback((e: any) => {
+type Handler = (e: any) => void;
+type ReturnTypes<T = any> = [T, Handler, Dispatch<SetStateAction<T>>];
+const useInput = <T = any>(initialValue: T): ReturnTypes<T> => {
+  const [value, setValue] = useState(initialValue);
+  const handler = useCallback((e) => {
     setValue(e.target.value);
   }, []);
   return [value, handler, setValue];
 };
 
 export default useInput;
-
-// < any를 안쓰고 싶으면 >
-// any를
-// ChangeEvent<HTMLInputElement>
-// e.target.value를
-// e.target.value as unknown as T
-// 로 바꾸면 된다.

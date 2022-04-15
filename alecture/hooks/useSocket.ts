@@ -1,13 +1,12 @@
-import io from 'socket.io-client';
 import { useCallback } from 'react';
+import { io, Socket } from 'socket.io-client';
 
-const backUrl = 'http://localhost:3096';
+const backUrl = process.env.NODE_ENV === 'production' ? 'https://sleact.nodebird.com' : 'http://localhost:3096';
 
-const sockets: { [key: string]: SocketIOClient.Socket } = {};
-const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () => void] => {
-  console.log('rerender', workspace);
+const sockets: { [key: string]: Socket } = {};
+const useSocket = (workspace?: string): [Socket | undefined, () => void] => {
   const disconnect = useCallback(() => {
-    if (workspace) {
+    if (workspace && sockets[workspace]) {
       sockets[workspace].disconnect();
       delete sockets[workspace];
     }
@@ -16,9 +15,10 @@ const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () =
     return [undefined, disconnect];
   }
   if (!sockets[workspace]) {
-    sockets[workspace] = io.connect(`${backUrl}/ws-${workspace}`, {
+    sockets[workspace] = io(`${backUrl}/ws-${workspace}`, {
       transports: ['websocket'],
     });
+    console.info('create socket', workspace, sockets[workspace]);
   }
 
   return [sockets[workspace], disconnect];
